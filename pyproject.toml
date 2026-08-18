@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sudoku-boards"
+version = "0.1.0"
+description = "Parse and represent sudoku boards from plain text, with precise error locations"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "sarah-m1992" }]
+
+[tool.setuptools]
+packages = ["sudoku_boards"]
