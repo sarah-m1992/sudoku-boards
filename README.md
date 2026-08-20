@@ -49,6 +49,24 @@ print(board.column(0))
 print(board.box(0))
 ```
 
+## Solving
+
+```python
+from sudoku_boards import solve, UnsolvableError
+
+try:
+    solved = solve(board)
+except UnsolvableError as err:
+    print(err)
+    raise SystemExit(1)
+
+print(solved)
+```
+
+`solve` returns a new `Board` and leaves the one you passed in untouched.
+It raises `UnsolvableError` both for boards that already break a rule and
+for well-formed boards that have no valid completion.
+
 If a row is short, the error says exactly where it stopped counting:
 
 ```
@@ -73,11 +91,13 @@ sudoku_boards.errors.SudokuParseError: line 1, column 2: duplicate value '5' in 
 - `sudoku_boards.parse` - text in, a `Board` out, or a `SudokuParseError`
 - `sudoku_boards.Board` - rows, columns, 3x3 boxes, and validity checks
 - `sudoku_boards.SudokuParseError` - carries `line`, `column`, and a caret-pointer `str()`
+- `sudoku_boards.solve` - backtracking solver, returns a new solved `Board`
+- `sudoku_boards.UnsolvableError` - raised when a board can't be solved
 
 ## Status
 
-Parsing, structural validation (row/column/box uniqueness), and basic
-board queries work. There's no solver yet.
+Parsing, structural validation (row/column/box uniqueness), basic board
+queries, and solving work. No puzzle generator yet.
 
 ## License
 
