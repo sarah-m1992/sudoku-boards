@@ -2,14 +2,17 @@
 
 from .board import Board
 from .errors import SudokuError, SudokuParseError
+from .generator import DIFFICULTIES, generate
 from .parser import parse
 from .solver import UnsolvableError, solve
 
 __all__ = [
     "Board",
+    "DIFFICULTIES",
     "SudokuError",
     "SudokuParseError",
     "UnsolvableError",
+    "generate",
     "parse",
     "solve",
 ]

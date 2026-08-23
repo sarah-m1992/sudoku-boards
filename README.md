@@ -67,6 +67,22 @@ print(solved)
 It raises `UnsolvableError` both for boards that already break a rule and
 for well-formed boards that have no valid completion.
 
+## Generating
+
+```python
+from sudoku_boards import generate
+
+puzzle = generate("hard")
+print(puzzle)
+```
+
+`generate` builds a random solved board and removes cells one at a time,
+checking after each removal that the puzzle still has exactly one
+solution, until it reaches the target number of givens for the chosen
+difficulty (`"easy"`, `"medium"`, `"hard"`, or `"expert"`). Pass a
+`random.Random` instance as `rng` to get a reproducible puzzle from a
+saved seed.
+
 If a row is short, the error says exactly where it stopped counting:
 
 ```
@@ -93,11 +109,13 @@ sudoku_boards.errors.SudokuParseError: line 1, column 2: duplicate value '5' in 
 - `sudoku_boards.SudokuParseError` - carries `line`, `column`, and a caret-pointer `str()`
 - `sudoku_boards.solve` - backtracking solver, returns a new solved `Board`
 - `sudoku_boards.UnsolvableError` - raised when a board can't be solved
+- `sudoku_boards.generate` - builds a random puzzle with a unique solution at a given difficulty
+- `sudoku_boards.DIFFICULTIES` - the difficulty names `generate` accepts, mapped to their target clue count
 
 ## Status
 
 Parsing, structural validation (row/column/box uniqueness), basic board
-queries, and solving work. No puzzle generator yet.
+queries, solving, and puzzle generation work.
 
 ## License
 
