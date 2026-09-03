@@ -49,6 +49,18 @@ print(board.column(0))
 print(board.box(0))
 ```
 
+A `Board` also tracks pencil marks per blank cell, for tools that want to
+show or manipulate candidates the way a human solver would on paper:
+
+```python
+board.add_candidate(0, 2, 1)
+board.add_candidate(0, 2, 4)
+print(board.candidates(0, 2))  # {1, 4}
+
+board.discard_candidate(0, 2, 1)
+board.set(0, 2, 4)  # filling a cell clears its candidates
+```
+
 ## Solving
 
 ```python
@@ -105,7 +117,7 @@ sudoku_boards.errors.SudokuParseError: line 1, column 2: duplicate value '5' in 
 ## What's here
 
 - `sudoku_boards.parse` - text in, a `Board` out, or a `SudokuParseError`
-- `sudoku_boards.Board` - rows, columns, 3x3 boxes, and validity checks
+- `sudoku_boards.Board` - rows, columns, 3x3 boxes, validity checks, and per-cell pencil marks
 - `sudoku_boards.SudokuParseError` - carries `line`, `column`, and a caret-pointer `str()`
 - `sudoku_boards.solve` - backtracking solver, returns a new solved `Board`
 - `sudoku_boards.UnsolvableError` - raised when a board can't be solved

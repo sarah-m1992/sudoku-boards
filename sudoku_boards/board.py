@@ -12,6 +12,7 @@ class Board:
             if len(cells) != SIZE or any(len(row) != SIZE for row in cells):
                 raise ValueError(f"cells must be a {SIZE}x{SIZE} grid")
             self._cells = [list(row) for row in cells]
+        self._candidates = [[set() for _ in range(SIZE)] for _ in range(SIZE)]
 
     def get(self, row, col):
         self._check_bounds(row, col)
@@ -22,11 +23,40 @@ class Board:
         if value < 0 or value > 9:
             raise ValueError(f"value must be 0-9, got {value}")
         self._cells[row][col] = value
+        # A filled cell has no pencil marks left to track.
+        if value != 0:
+            self._candidates[row][col].clear()
 
     @staticmethod
     def _check_bounds(row, col):
         if not (0 <= row < SIZE and 0 <= col < SIZE):
             raise IndexError(f"cell ({row}, {col}) is out of bounds for a {SIZE}x{SIZE} board")
+
+    def candidates(self, row, col):
+        """The set of pencil-marked candidate values for a cell."""
+        self._check_bounds(row, col)
+        return set(self._candidates[row][col])
+
+    def add_candidate(self, row, col, value):
+        self._check_bounds(row, col)
+        self._check_candidate_value(value)
+        if self._cells[row][col] != 0:
+            raise ValueError(f"cell ({row}, {col}) is filled, it can't hold candidates")
+        self._candidates[row][col].add(value)
+
+    def discard_candidate(self, row, col, value):
+        self._check_bounds(row, col)
+        self._check_candidate_value(value)
+        self._candidates[row][col].discard(value)
+
+    def clear_candidates(self, row, col):
+        self._check_bounds(row, col)
+        self._candidates[row][col].clear()
+
+    @staticmethod
+    def _check_candidate_value(value):
+        if value < 1 or value > 9:
+            raise ValueError(f"candidate value must be 1-9, got {value}")
 
     def row(self, index):
         return list(self._cells[index])
