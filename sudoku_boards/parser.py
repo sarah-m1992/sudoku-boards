@@ -19,17 +19,26 @@ class _Cell:
 def parse(text):
     """Parse a text sudoku board into a Board.
 
-    Expects nine rows of nine characters each, where a character is a
-    digit 1-9 for a filled cell or '.'/'0' for a blank one. Spaces and
-    '|' inside a row are ignored, so cells can be visually grouped.
-    Blank lines, lines starting with '#', and lines made only of
-    '+', '-' or '=' (ascii table borders) are skipped entirely and
-    don't count as board rows.
+    Accepts two formats. If the text is a single line, it's treated as
+    a flat 81-character string, read left to right, top to bottom,
+    where a character is a digit 1-9 for a filled cell or '.'/'0' for
+    a blank one.
+
+    Otherwise it's treated as a grid: nine rows of nine characters
+    each, where a character is a digit 1-9 for a filled cell or '.'/'0'
+    for a blank one. Spaces and '|' inside a row are ignored, so cells
+    can be visually grouped. Blank lines, lines starting with '#', and
+    lines made only of '+', '-' or '=' (ascii table borders) are
+    skipped entirely and don't count as board rows.
 
     Raises SudokuParseError, with a line and column number pointing at
     the exact problem, if the text doesn't describe a well-formed
     9x9 board.
     """
+    stripped_text = text.strip()
+    if stripped_text and "\n" not in stripped_text:
+        return _parse_flat(stripped_text)
+
     lines = text.splitlines()
     grid_rows = []  # list of (line_no, list[_Cell])
 
@@ -65,6 +74,46 @@ def parse(text):
     positions = [[(cell.line, cell.column) for cell in cells] for _, cells in grid_rows]
 
     _check_duplicates(values, positions, lines)
+
+    return Board(cells=values)
+
+
+def _parse_flat(line):
+    total = SIZE * SIZE
+    cells = []
+    for column, ch in enumerate(line, start=1):
+        if len(cells) >= total:
+            raise SudokuParseError(
+                f"too many characters in flat board string (expected {total})",
+                line=1,
+                column=column,
+                source_line=line,
+            )
+        if ch in _BLANK_CHARS:
+            cells.append(_Cell(0, 1, column))
+        elif ch in _DIGIT_CHARS:
+            cells.append(_Cell(int(ch), 1, column))
+        else:
+            raise SudokuParseError(
+                f"unexpected character {ch!r} in flat board string (expected a digit 1-9 or '.')",
+                line=1,
+                column=column,
+                source_line=line,
+            )
+
+    if len(cells) < total:
+        raise SudokuParseError(
+            f"flat board string has {len(cells)} character(s), expected {total}",
+            line=1,
+            column=len(line) + 1,
+            source_line=line,
+        )
+
+    rows = [cells[i * SIZE:(i + 1) * SIZE] for i in range(SIZE)]
+    values = [[cell.value for cell in row] for row in rows]
+    positions = [[(cell.line, cell.column) for cell in row] for row in rows]
+
+    _check_duplicates(values, positions, [line])
 
     return Board(cells=values)
 

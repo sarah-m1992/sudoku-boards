@@ -12,9 +12,11 @@ line and column of the problem, the way a compiler would.
 
 ## Board format
 
-Nine rows of nine characters. A digit 1-9 is a filled cell, `.` or `0`
-is blank. Spaces, `|`, and lines made of `-`, `+`, `=` are allowed and
-ignored, so a board with visual dividers still parses:
+Two formats are accepted, chosen automatically based on the text.
+
+A grid of nine rows of nine characters. A digit 1-9 is a filled cell,
+`.` or `0` is blank. Spaces, `|`, and lines made of `-`, `+`, `=` are
+allowed and ignored, so a board with visual dividers still parses:
 
 ```
 5 3 . | . 7 . | . . .
@@ -29,6 +31,16 @@ ignored, so a board with visual dividers still parses:
 . . . | 4 1 9 | . . 5
 . . . | . 8 . | . 7 9
 ```
+
+Or a flat 81-character string, read left to right, top to bottom,
+with the same rules for digits and blanks and no separators:
+
+```
+530070000600195000098000060800060003400803001700020006060000280000419005000080
+```
+
+`parse` picks the flat format whenever the text is a single line;
+anything with more than one line is parsed as a grid.
 
 ## Usage
 
