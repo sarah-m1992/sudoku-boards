@@ -141,6 +141,12 @@ sudoku_boards.errors.SudokuParseError: line 1, column 2: duplicate value '5' in 
 Parsing, structural validation (row/column/box uniqueness), basic board
 queries, solving, and puzzle generation work.
 
+## Testing
+
+```
+python -m unittest discover
+```
+
 ## License
 
 MIT
