@@ -45,12 +45,10 @@ anything with more than one line is parsed as a grid.
 ## Usage
 
 ```python
-from sudoku_boards import parse, SudokuParseError
-
-text = open("puzzle.txt").read()
+from sudoku_boards import Board, SudokuParseError
 
 try:
-    board = parse(text)
+    board = Board.from_file("puzzle.txt")
 except SudokuParseError as err:
     print(err)
     raise SystemExit(1)
@@ -130,6 +128,7 @@ sudoku_boards.errors.SudokuParseError: line 1, column 2: duplicate value '5' in 
 
 - `sudoku_boards.parse` - text in, a `Board` out, or a `SudokuParseError`
 - `sudoku_boards.Board` - rows, columns, 3x3 boxes, validity checks, and per-cell pencil marks
+- `sudoku_boards.Board.from_file` - reads and parses a board straight from a file path
 - `sudoku_boards.SudokuParseError` - carries `line`, `column`, and a caret-pointer `str()`
 - `sudoku_boards.solve` - backtracking solver, returns a new solved `Board`
 - `sudoku_boards.UnsolvableError` - raised when a board can't be solved

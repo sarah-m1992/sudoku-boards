@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 
 from sudoku_boards import Board, SudokuParseError, parse
@@ -163,6 +165,38 @@ class DuplicateValidationTests(unittest.TestCase):
         with self.assertRaises(SudokuParseError) as ctx:
             parse("\n".join(rows))
         self.assertIn("first seen at line 1, column 1", str(ctx.exception))
+
+
+class FromFileTests(unittest.TestCase):
+    def _write(self, text):
+        fd, path = tempfile.mkstemp(suffix=".txt")
+        with os.fdopen(fd, "w") as f:
+            f.write(text)
+        self.addCleanup(os.remove, path)
+        return path
+
+    def test_reads_and_parses_a_grid_file(self):
+        path = self._write("\n".join(SOLVED_ROWS))
+        board = Board.from_file(path)
+        self.assertEqual(board, Board(cells=SOLVED_CELLS))
+
+    def test_reads_and_parses_a_flat_file(self):
+        path = self._write(SOLVED_FLAT)
+        board = Board.from_file(path)
+        self.assertEqual(board, Board(cells=SOLVED_CELLS))
+
+    def test_malformed_file_raises_parse_error_with_location(self):
+        rows = list(SOLVED_ROWS)
+        rows[2] = "1234567?9"
+        path = self._write("\n".join(rows))
+        with self.assertRaises(SudokuParseError) as ctx:
+            Board.from_file(path)
+        self.assertEqual(ctx.exception.line, 3)
+        self.assertEqual(ctx.exception.column, 8)
+
+    def test_missing_file_raises_os_error(self):
+        with self.assertRaises(OSError):
+            Board.from_file("/no/such/path/puzzle.txt")
 
 
 class ErrorFormattingTests(unittest.TestCase):

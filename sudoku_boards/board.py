@@ -14,6 +14,19 @@ class Board:
             self._cells = [list(row) for row in cells]
         self._candidates = [[set() for _ in range(SIZE)] for _ in range(SIZE)]
 
+    @classmethod
+    def from_file(cls, path, encoding="utf-8"):
+        """Read a board from a text file and parse it.
+
+        `path` accepts anything `open()` does. Raises `SudokuParseError`
+        under the same conditions as `sudoku_boards.parse`.
+        """
+        from .parser import parse  # avoid a circular import at module load time
+
+        with open(path, encoding=encoding) as f:
+            text = f.read()
+        return parse(text)
+
     def get(self, row, col):
         self._check_bounds(row, col)
         return self._cells[row][col]
